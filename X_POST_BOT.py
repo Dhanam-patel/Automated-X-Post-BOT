@@ -16,15 +16,14 @@ def fetch_news():
         "domains": "wsj.com",
         "q": "technology",
         "apiKey": "Your API Key",
-        "pageSize": 10,  # Fetch 10 articles
+        "pageSize": 10, 
     }
     try:
         response = requests.get(news_api_url, params=params)
-        response.raise_for_status()  # Raise an exception for HTTP errors
+        response.raise_for_status() 
         data = response.json()
         articles = data.get("articles", [])
         if articles:
-            # Select a random article from the fetched articles
             random_article = random.choice(articles)
             return random_article.get('content', "No content available.")
         print("No articles found.")
@@ -32,8 +31,7 @@ def fetch_news():
     except Exception as e:
         print(f"Error fetching news: {e}")
         return None
-
-# Helper function to filter unsupported characters
+        
 def filter_bmp_characters(text):
     """Remove characters that are not in the Basic Multilingual Plane (BMP)."""
     return ''.join(char for char in text if ord(char) <= 0xFFFF)
@@ -43,13 +41,13 @@ def create_tweet(news_text):
     """Generates a tweet summarizing the news using the Ollama API."""
     try:
         response = ollama.chat(
-            model="llama2",  # Specify the model you want to use
+            model="llama2", 
             messages=[
                 {"role": "user", "content": f"Summarize this news article  \"{news_text}\" into a highly engaging X (formerly known as Twitter) post in 270 characters."}
             ]
         )
-        tweet_text = response['message']['content'].strip()  # Extract the response content
-        return filter_bmp_characters(tweet_text)  # Filter unsupported characters
+        tweet_text = response['message']['content'].strip() 
+        return filter_bmp_characters(tweet_text)  
     except Exception as e:
         print(f"Error generating tweet: {e}")
         return None
@@ -57,7 +55,7 @@ def create_tweet(news_text):
 # Step 3: Automate posting the tweet using Selenium
 def post_to_x(tweet_text):
     """Automates logging in and navigating to the post section, filling the tweet, and waiting for manual posting."""
-    driver = None  # Initialize the WebDriver to handle potential exceptions
+    driver = None  
     try:
         # Decoder
         with open("X_POST_AI/Credentials.txt") as f:
@@ -78,20 +76,18 @@ def post_to_x(tweet_text):
         twitter_username = f"@{username}"
         twitter_password = f"{password}"
 
-        # Initialize WebDriver
         driver = webdriver.Chrome()
         driver.get("https://twitter.com/login")
 
         print("Logging in to Twitter...")
 
-        # Enter username
+
         username_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, "text"))
         )
         username_input.send_keys(twitter_username)
         username_input.send_keys(Keys.RETURN)
 
-        # Handle email prompt if present
         try:
             email_input = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.NAME, "text"))
@@ -108,17 +104,14 @@ def post_to_x(tweet_text):
         password_input.send_keys(twitter_password)
         password_input.send_keys(Keys.RETURN)
 
-        # Wait until logged in and redirect to home page
         WebDriverWait(driver, 10).until(
             EC.url_contains("home")
         )
 
         print("Login successful. Navigating to the tweet composer...")
 
-        # Navigate to tweet composer
         driver.get("https://twitter.com/compose/tweet")
 
-        # Wait for the tweet text box to be ready
         tweet_box = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//div[@data-testid='tweetTextarea_0']"))
         )
