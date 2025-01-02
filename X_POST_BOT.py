@@ -15,7 +15,7 @@ def fetch_news():
     params = {
         "domains": "wsj.com",
         "q": "technology",
-        "apiKey": "4e67960493ca496d8c15cd966c94e3a5",
+        "apiKey": "Your API Key",
         "pageSize": 10,  # Fetch 10 articles
     }
     try:
