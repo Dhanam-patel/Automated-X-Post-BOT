@@ -58,7 +58,7 @@ def post_to_x(tweet_text):
     driver = None  
     try:
         # Decoder
-        with open("X_POST_AI/Credentials.txt") as f:
+        with open("Path of Credentals in which you store your information as the mentioned format") as f:
             UserInput = f.read()
         words = UserInput.split(" ")
         DFinal = []
